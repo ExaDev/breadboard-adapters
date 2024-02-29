@@ -1,17 +1,14 @@
-import { useState } from "react";
+
 import { BreadboardProviderProps } from "../@types/types";
 import { BreadboardContext } from "./breadboardContext";
+import { Breadboard } from "@google-labs/breadboard";
 
 
 const BreadboardProvider: React.FC<BreadboardProviderProps> = ({ children }) => {
-	const [count, setCount] = useState(0);
-
-	const incrementNumber = () => {
-		setCount((count) => count + 1);
-	}
+	const board:Breadboard | null = null;
 
 	return (
-		<BreadboardContext.Provider value={{ value: count, incrementNumber }}>
+		<BreadboardContext.Provider value={{ board }}>
 			{children}
 		</BreadboardContext.Provider>
 	);

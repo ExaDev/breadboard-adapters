@@ -1,6 +1,7 @@
+import { Breadboard } from "@google-labs/breadboard";
+
 export type BreadboardContextType = {
-	value: number;
-	incrementNumber: () => void;
+	board: Breadboard | null;
 }
 
 export type BreadboardProviderProps = {
