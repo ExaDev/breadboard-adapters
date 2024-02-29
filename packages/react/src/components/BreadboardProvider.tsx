@@ -1,6 +1,6 @@
 
 import { BreadboardProviderProps } from "../@types/types";
-import { BreadboardContext } from "./breadboardContext";
+import { BreadboardContext } from "./BreadboardContext";
 import { Breadboard } from "@google-labs/breadboard";
 
 
