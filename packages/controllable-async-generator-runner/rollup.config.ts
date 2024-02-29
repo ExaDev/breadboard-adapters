@@ -24,7 +24,7 @@ export default defineConfig({
 	input: resolve("src", "index.ts"),
 	output: [
 		{
-			file: resolve("dist", "index.js"),
+			file: resolve("dist", "index.cjs.js"),
 			format: "cjs",
 		},
 		{
