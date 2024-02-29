@@ -1,11 +1,15 @@
 {
 	"devDependencies": {
-		"@types/node": "^20.11.22",
+		"@types/node": "^20.11.23",
 		"typescript": "^5.3.3"
 	},
 	"name": "breadboard-adapters",
 	"version": "0.0.1",
 	"workspaces": [
 		"packages/*"
-	]
+	],
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/ExaDev-io/breadboard-adapters.git"
+	}
 }

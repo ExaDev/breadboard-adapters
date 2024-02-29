@@ -1,4 +1,44 @@
 {
-	"name": "controllable-async-generator-runner",
-	"version": "0.0.1"
+  "name": "controllable-async-generator-runner",
+  "version": "0.0.1",
+  "$schema": "https://json.schemastore.org/package.json",
+  "devDependencies": {
+    "@rollup/plugin-typescript": "^11.1.6",
+    "@types/node": "^20.11.23",
+    "rollup": "^4.12.0",
+    "rollup-plugin-dts": "^6.1.0",
+    "syncpack": "^12.3.0",
+    "tslib": "^2.6.2",
+    "typescript": "^5.3.3"
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "node": "./dist/index.cjs.js",
+      "import": "./dist/index.esm.js",
+      "require": "./dist/index.cjs.js",
+      "default": "./dist/index.cjs.js"
+    },
+    "./cjs": "./dist/index.cjs.js",
+    "./esm": "./dist/index.esm.js",
+    "./iife": "./dist/index.iife.js",
+    "./umd": "./dist/index.umd.js"
+  },
+  "files": [
+    "dist"
+  ],
+  "main": "dist/index.cjs.js",
+  "module": "dist/index.esm.js",
+  "repository": {
+    "directory": "packages/controllable-async-generator-runner",
+    "type": "git",
+    "url": "git+https://github.com/ExaDev-io/breadboard-adapters.git"
+  },
+  "scripts": {
+    "build": "tsc && npm run rollup",
+    "prebuild": "syncpack fix-mismatches && syncpack format && npx -y rimraf dist",
+    "rollup": "rollup --config rollup.config.ts --configPlugin @rollup/plugin-typescript"
+  },
+  "type": "module",
+  "types": "dist/index.d.ts"
 }
