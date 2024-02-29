@@ -7,5 +7,9 @@
 	"version": "0.0.1",
 	"workspaces": [
 		"packages/*"
-	]
+	],
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/ExaDev-io/breadboard-adapters.git"
+	}
 }
