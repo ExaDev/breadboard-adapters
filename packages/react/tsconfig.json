@@ -1,20 +1,43 @@
 {
 	"compilerOptions": {
-		"target": "es5",
-		"lib": ["dom", "dom.iterable", "esnext"],
-		"allowJs": true,
-		"skipLibCheck": true,
-		"esModuleInterop": true,
+		"target": "ESNext",
+		"useDefineForClassFields": true,
+		"lib": [
+			"DOM",
+			"DOM.Iterable",
+			"ESNext"
+		],
+		"allowJs": false,
 		"allowSyntheticDefaultImports": true,
 		"strict": true,
 		"forceConsistentCasingInFileNames": true,
-		"noFallthroughCasesInSwitch": true,
-		"module": "esnext",
-		"moduleResolution": "node",
+		"module": "ESNext",
+		"moduleResolution": "Node",
 		"resolveJsonModule": true,
 		"isolatedModules": true,
 		"noEmit": true,
-		"jsx": "react-jsx"
+		"jsx": "react-jsx",
+		"declaration": true,
+		"skipLibCheck": true,
+		"esModuleInterop": true,
+		"declarationMap": true,
+		"baseUrl": ".",
+		"paths": {
+			"@breadboard-adapter/react": [
+				"src/index.ts"
+			]
+		},
+		"typeRoots": [
+			"node_modules/@types",
+			"src/index.d.ts"
+		]
 	},
-	"include": ["src"]
+	"include": [
+		"src/**/*"
+	],
+	"references": [
+		{
+			"path": "./tsconfig.node.json"
+		}
+	]
 }
