@@ -13,5 +13,5 @@ const BreadboardProvider: React.FC<BreadboardProviderProps> = ({ children }) => 
 		</BreadboardContext.Provider>
 	);
 }
-
+export type BreadboardProvider = typeof BreadboardProvider;
 export default BreadboardProvider;
