@@ -1,5 +1,5 @@
 import { useContext } from "react";
-import { BreadboardContext } from "./breadboardContext";
+import { BreadboardContext } from "./BreadboardContext";
 
 const useBreadboard = () => {
 	const context = useContext(BreadboardContext);
