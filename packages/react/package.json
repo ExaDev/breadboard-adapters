@@ -1,15 +1,50 @@
 {
-	"name": "@breadboard-adapter/react",
-	"version": "0.0.1",
 	"devDependencies": {
+		"@google-labs/breadboard": "^0.11.2",
+		"@types/node": "^20.11.23",
 		"@types/react": "^18.2.61",
+		"@vitejs/plugin-react": "^4.2.1",
+		"react": "^18.2.0",
+		"rollup": "^4.12.0",
 		"tslib": "^2.6.2",
 		"typescript": "^5.3.3",
-		"@google-labs/breadboard": "^0.11.2"
+		"vite": "^5.1.4",
+		"vite-plugin-dts": "^3.7.3",
+		"vite-plugin-linter": "^2.1.1",
+		"vite-tsconfig-paths": "^4.3.1"
 	},
-	"dependencies": {},
+	"exports": {
+		".": {
+			"import": "./dist/index.es.js",
+			"node": "./dist/index.cjs.js",
+			"require": "./dist/index.umd.js",
+			"types": "./dist/index.d.ts"
+		}
+	},
+	"files": [
+		"dist"
+	],
+	"main": "./dist/index.umd.js",
+	"module": "./dist/index.es.js",
+	"name": "@breadboard-adapter/react",
 	"peerDependencies": {
 		"@google-labs/breadboard": "^0.11.2",
 		"react": "^18.2.61"
-	}
+	},
+	"repository": {
+		"directory": "packages/react",
+		"type": "git",
+		"url": "git+https://github.com/ExaDev-io/breadboard-adapters.git"
+	},
+	"scripts": {
+		"build": "tsc && vite build",
+		"dev": "vite --open",
+		"local": "npm install -g $(npm pack)",
+		"prepack": "npm run build",
+		"prepublishOnly": "git push --follow-tags",
+		"preview": "vite preview --open"
+	},
+	"type": "module",
+	"types": "./dist/index.d.ts",
+	"version": "0.0.1"
 }
