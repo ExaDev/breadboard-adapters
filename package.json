@@ -1,4 +1,7 @@
 {
 	"name": "breadboard-adapters",
-	"version": "0.0.1"
+	"version": "0.0.1",
+	"workspaces": [
+		"packages/*"
+	]
 }
