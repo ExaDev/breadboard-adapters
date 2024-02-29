@@ -1,4 +1,18 @@
 {
-	"name": "controllable-async-generator-runner",
-	"version": "0.0.1"
+  "name": "controllable-async-generator-runner",
+  "version": "0.0.1",
+  "devDependencies": {
+    "@rollup/plugin-typescript": "^11.1.6",
+    "@types/node": "^20.11.23",
+    "rollup": "^4.12.0",
+    "rollup-plugin-dts": "^6.1.0",
+    "syncpack": "^12.3.0",
+    "tslib": "^2.6.2",
+    "typescript": "^5.3.3"
+  },
+  "scripts": {
+    "build": "tsc && npm run rollup",
+    "prebuild": "syncpack fix-mismatches && syncpack format && npx -y rimraf dist",
+    "rollup": "rollup --config rollup.config.ts --configPlugin @rollup/plugin-typescript"
+  }
 }
