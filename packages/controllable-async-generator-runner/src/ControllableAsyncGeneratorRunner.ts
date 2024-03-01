@@ -160,3 +160,12 @@ const syncRunner = new SyncControllableGeneratorRunner({
 	handleReturn: (value) => console.log(value),
 	handleThrow: (value) => console.log(value),
 });
+
+const asyncRunner = new AsyncControllableGeneratorRunner({
+	builder: (params: number) => asyncGenerator(params),
+	builderParams: increment,
+	_generator: asyncGenerator(increment),
+	handleNext: (value) => console.log(value),
+	handleReturn: (value) => console.log(value),
+	handleThrow: (value) => console.log(value),
+});
