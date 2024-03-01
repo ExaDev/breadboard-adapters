@@ -1,5 +1,5 @@
 import type { RcFile } from "syncpack";
 
 export default {
-	indent: "tab",
+	indent: "\t",
 } satisfies RcFile;
