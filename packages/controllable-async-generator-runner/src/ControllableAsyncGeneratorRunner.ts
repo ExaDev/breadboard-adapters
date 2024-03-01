@@ -1,118 +1,164 @@
 import { GeneratorStatus } from "./types/GeneratorStatus";
-import { ConstructorParams } from "./types/ConstructorParams";
-import { ControllableAsyncGeneratorRunnerInterface } from "./types/ControllableAsyncGeneratorRunnerInterface";
-export class ControllableAsyncGeneratorRunner<
-	TReturn,
-	TNext,
-	TNextReturn,
-	TGenerateParams,
-	TState extends GeneratorStatus = GeneratorStatus
-> implements ControllableAsyncGeneratorRunnerInterface<TReturn,
-	TNext,
-	TNextReturn,
-	TGenerateParams>{
-	public get state(): TState {
-		return this._state;
-	}
-	private pausePromiseResolve: undefined | ((value?: unknown) => void);
-	private readonly generatorGenerator: (
-		params?: TGenerateParams
-	) => AsyncGenerator<TReturn, TNext, TNextReturn>;
-	private readonly handler: (value: TReturn) => unknown;
-	private readonly statusEmitter: () => void;
-	private readonly generatorParams?: TGenerateParams;
 
-	private readonly initialiseState: () => TState = () =>
-		({
+export type SyncOrAsyncGenerator<C> = Generator<C> | AsyncGenerator<C>;
+
+export interface GeneratorRunnerInterface<
+	P,
+	C,
+	G extends SyncOrAsyncGenerator<C>
+> {
+	builderParams: P;
+	builder: (p: P) => G;
+	handleNext: (value: G["next"]) => void;
+	handleReturn: (value: G["return"]) => void;
+	handleThrow: (value: G["throw"]) => void;
+	_generator: G;
+}
+
+export interface ControllableGeneratorRunnerInterface<
+	P,
+	C,
+	G extends SyncOrAsyncGenerator<C>,
+	S extends GeneratorStatus = GeneratorStatus
+> extends GeneratorRunnerInterface<P, C, G> {
+	start: () => void;
+	pause: () => void;
+	stop: () => void;
+	_status: S;
+	reportStatus: () => S;
+}
+
+export abstract class AbstractControllableGeneratorRunner<
+	P,
+	C,
+	G extends SyncOrAsyncGenerator<C>,
+	Status extends GeneratorStatus = GeneratorStatus
+> implements ControllableGeneratorRunnerInterface<P, C, G, Status>
+{
+	abstract builderParams: P;
+	abstract _generator: G;
+	abstract start(): void;
+	abstract pause(): void;
+	abstract stop(): void;
+	abstract reportStatus(): Status;
+	abstract builder: (p: P) => G;
+	abstract handleNext: (value: G["next"]) => void;
+	abstract handleReturn: (value: G["return"]) => void;
+	abstract handleThrow: (value: G["throw"]) => void;
+	abstract _status: Status;
+}
+
+export abstract class ControllableGeneratorRunner<
+	P,
+	C,
+	G extends SyncOrAsyncGenerator<C>,
+	S extends GeneratorStatus = GeneratorStatus
+> extends AbstractControllableGeneratorRunner<P, C, G, S> {
+	_status: S;
+	builderParams: P;
+	builder: (p: P) => G;
+	handleNext: (value: G["next"]) => void;
+	handleReturn: (value: G["return"]) => void;
+	handleThrow: (value: G["throw"]) => void;
+
+	constructor({
+		builder,
+		builderParams,
+		handleNext,
+		handleReturn,
+		handleThrow,
+	}: GeneratorRunnerInterface<P, C, G>) {
+		super();
+		this.builder = builder;
+		this.builderParams = builderParams;
+		this.handleNext = handleNext;
+		this.handleReturn = handleReturn;
+		this.handleThrow = handleThrow;
+		this._status = this.initialiseStatus();
+	}
+
+	initialiseStatus(): S {
+		return {
 			active: false,
 			paused: false,
 			finished: false,
-		} as TState);
-
-	private _state: TState = this.initialiseState() ?? ({} as TState);
-
-	constructor({
-		generatorGenerator,
-		handler,
-		statusEmitter,
-		generatorParams,
-		initialiseState: initialiseState = () =>
-			({
-				active: false,
-				paused: false,
-				finished: false,
-			} as TState),
-		_state = initialiseState() ?? ({} as TState),
-	}: ConstructorParams<TGenerateParams, TReturn, TNext, TNextReturn, TState>) {
-		this._state = _state;
-		this.initialiseState = initialiseState;
-		this.generatorParams = generatorParams;
-		this.statusEmitter = statusEmitter;
-		this.handler = handler;
-		this.generatorGenerator = generatorGenerator;
+		} as S;
 	}
 
-	run(): void {
-		const generator: AsyncGenerator<TReturn, TNext, TNextReturn | undefined> =
-			this.generatorGenerator(this.generatorParams);
-		const handler = this.handler;
-		(async (): Promise<void> => {
-			try {
-				let next = await generator.next();
-				while (this.state.active && !next.done) {
-					if (this.state.paused) {
-						await new Promise((resolve): void => {
-							this.pausePromiseResolve = resolve;
-						});
-					}
-					await handler(next.value);
-					next = await generator.next();
-				}
-				console.debug("ServiceWorker", "generator done");
-				this.state.finished = true;
-			} catch (error) {
-				console.error(error);
-			} finally {
-				this.stop();
-			}
-		})();
-	}
+	_generator: G = this.builder(this.builderParams);
 
 	start(): void {
-		if (!this.state.active) {
-			this._state = this.initialiseState();
-			this.state.active = true;
-			this.run();
-		} else if (this.state.paused) {
-			console.debug("ServiceWorker", "resuming");
-			this.state.paused = false;
-			this.state.finished = false;
-			if (this.statusEmitter) {
-				this.statusEmitter();
-			}
-			this.pausePromiseResolve?.();
-		} else {
-			console.warn("ServiceWorker", "already started");
-			if (this.statusEmitter) {
-				this.statusEmitter();
-			}
-		}
+		this._status.active = true;
+		this._status.paused = false;
+		this._status.finished = false;
 	}
 
 	pause(): void {
-		this.state.paused = true;
-		if (this.statusEmitter) {
-			this.statusEmitter();
-		}
+		this._status.active = false;
+		this._status.paused = true;
 	}
 
-	stop() {
-		if (this.state.active) {
-			this._state = this.initialiseState();
-			this.pausePromiseResolve?.();
-		}
-		if (this.statusEmitter) {
-			this.statusEmitter();
-		}
+	stop(): void {
+		this._status.active = false;
+		this._status.paused = false;
+		this._status.finished = true;
+	}
+
+	reportStatus(): S {
+		return this._status;
 	}
 }
+
+export class SyncControllableGeneratorRunner<
+	P,
+	C,
+	// B extends GeneratorBuilder<P, C, G>,
+	G extends Generator<C> = Generator<C>,
+	S extends GeneratorStatus = GeneratorStatus
+> extends ControllableGeneratorRunner<P, C, G, S> {
+	_generator: G = this.builder(this.builderParams);
+	next: IteratorResult<C> = this._generator.next();
+}
+export class AsyncControllableGeneratorRunner<
+	P,
+	C,
+	// B extends GeneratorBuilder<P, C, G>,
+	G extends AsyncGenerator<C> = AsyncGenerator<C>,
+	S extends GeneratorStatus = GeneratorStatus
+> extends ControllableGeneratorRunner<P, C, G, S> {
+	_generator: G = this.builder(this.builderParams);
+	next: Promise<IteratorResult<C>> = this._generator.next();
+}
+
+const increment: number = 10;
+const iterations: number = 10;
+function* generator(increment: number): Generator<number, void, unknown> {
+	let i = 0;
+	let value = 0;
+	while (i < iterations) {
+		value += increment;
+		yield value;
+		i++;
+	}
+}
+
+async function* asyncGenerator(
+	increment: number
+): AsyncGenerator<number, void, unknown> {
+	let i = 0;
+	let value = 0;
+	while (i < iterations) {
+		value += increment;
+		yield value;
+		i++;
+	}
+}
+
+const syncRunner = new SyncControllableGeneratorRunner({
+	builder: (params: number) => generator(params),
+	builderParams: increment,
+	_generator: generator(increment),
+	handleNext: (value) => console.log(value),
+	handleReturn: (value) => console.log(value),
+	handleThrow: (value) => console.log(value),
+});
