@@ -112,7 +112,6 @@ export abstract class ControllableGeneratorRunner<
 export class SyncControllableGeneratorRunner<
 	P,
 	C,
-	// B extends GeneratorBuilder<P, C, G>,
 	G extends Generator<C> = Generator<C>,
 	S extends GeneratorStatus = GeneratorStatus
 > extends ControllableGeneratorRunner<P, C, G, S> {
@@ -122,7 +121,6 @@ export class SyncControllableGeneratorRunner<
 export class AsyncControllableGeneratorRunner<
 	P,
 	C,
-	// B extends GeneratorBuilder<P, C, G>,
 	G extends AsyncGenerator<C> = AsyncGenerator<C>,
 	S extends GeneratorStatus = GeneratorStatus
 > extends ControllableGeneratorRunner<P, C, G, S> {
