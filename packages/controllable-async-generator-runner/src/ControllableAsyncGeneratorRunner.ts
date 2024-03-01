@@ -8,7 +8,7 @@ export interface GeneratorRunnerInterface<P, C, G extends SyncOrAsyncGenerator<C
 	handleNext: (value: G["next"]) => void;
 	handleReturn: (value: G["return"]) => void;
 	handleThrow: (value: G["throw"]) => void;
-	// _generator: G;
+	_generator?: G;
 }
 
 export interface ControllableGeneratorRunnerInterface<
