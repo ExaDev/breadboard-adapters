@@ -2,17 +2,13 @@ import { GeneratorStatus } from "./types/GeneratorStatus";
 
 export type SyncOrAsyncGenerator<C> = Generator<C> | AsyncGenerator<C>;
 
-export interface GeneratorRunnerInterface<
-	P,
-	C,
-	G extends SyncOrAsyncGenerator<C>
-> {
+export interface GeneratorRunnerInterface<P, C, G extends SyncOrAsyncGenerator<C>> {
 	builderParams: P;
 	builder: (p: P) => G;
 	handleNext: (value: G["next"]) => void;
 	handleReturn: (value: G["return"]) => void;
 	handleThrow: (value: G["throw"]) => void;
-	_generator: G;
+	// _generator: G;
 }
 
 export interface ControllableGeneratorRunnerInterface<
@@ -75,6 +71,7 @@ export abstract class ControllableGeneratorRunner<
 		this.handleReturn = handleReturn;
 		this.handleThrow = handleThrow;
 		this._status = this.initialiseStatus();
+		// this._generator = this.builder(this.builderParams);
 	}
 
 	initialiseStatus(): S {
@@ -85,6 +82,7 @@ export abstract class ControllableGeneratorRunner<
 		} as S;
 	}
 
+	// _generator: G;
 	_generator: G = this.builder(this.builderParams);
 
 	start(): void {
@@ -115,7 +113,6 @@ export class SyncControllableGeneratorRunner<
 	G extends Generator<C> = Generator<C>,
 	S extends GeneratorStatus = GeneratorStatus
 > extends ControllableGeneratorRunner<P, C, G, S> {
-	_generator: G = this.builder(this.builderParams);
 	next: IteratorResult<C> = this._generator.next();
 }
 export class AsyncControllableGeneratorRunner<
@@ -124,7 +121,6 @@ export class AsyncControllableGeneratorRunner<
 	G extends AsyncGenerator<C> = AsyncGenerator<C>,
 	S extends GeneratorStatus = GeneratorStatus
 > extends ControllableGeneratorRunner<P, C, G, S> {
-	_generator: G = this.builder(this.builderParams);
 	next: Promise<IteratorResult<C>> = this._generator.next();
 }
 
@@ -155,7 +151,7 @@ async function* asyncGenerator(
 const syncRunner = new SyncControllableGeneratorRunner({
 	builder: (params: number) => generator(params),
 	builderParams: increment,
-	_generator: generator(increment),
+	// _generator: generator(increment),
 	handleNext: (value) => console.log(value),
 	handleReturn: (value) => console.log(value),
 	handleThrow: (value) => console.log(value),
@@ -164,7 +160,7 @@ const syncRunner = new SyncControllableGeneratorRunner({
 const asyncRunner = new AsyncControllableGeneratorRunner({
 	builder: (params: number) => asyncGenerator(params),
 	builderParams: increment,
-	_generator: asyncGenerator(increment),
+	// _generator: asyncGenerator(increment),
 	handleNext: (value) => console.log(value),
 	handleReturn: (value) => console.log(value),
 	handleThrow: (value) => console.log(value),
