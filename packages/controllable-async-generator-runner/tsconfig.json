@@ -1,23 +1,24 @@
 {
 	"compilerOptions": {
 		"allowSyntheticDefaultImports": true,
+		"baseUrl": "src",
 		"declaration": true,
 		"esModuleInterop": false,
 		"lib": [
-			"ES2017"
+			"ES2018",
+			"DOM"
 		],
 		"module": "esnext",
 		"moduleResolution": "node",
-		"noEmitOnError": true,
 		"noEmit": true,
+		"noEmitOnError": true,
+		"outDir": "dist",
+		"paths": {},
 		"removeComments": false,
 		"resolveJsonModule": true,
-		"outDir": "dist",
 		"sourceMap": true,
 		"strict": true,
-		"target": "ES2017",
-		"baseUrl": "src",
-		"paths": {}
+		"target": "ES2017"
 	},
 	"include": [
 		"src/**/*",
